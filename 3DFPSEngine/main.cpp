@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
 	// ========== Setup Shader ==========
-	Shader shader("./shaders/shader.vs", "./shaders/shader.fs");
+	Shader shader("./shaders/shader.vert", "./shaders/shader.frag");
 
 	// ========== Test Object ==========
 	float vertices[] = 
@@ -149,6 +149,9 @@ int main(int argc, char* argv[])
 
 	shader.UseShader();
 
+	// Enable Z-Buffer and depth testing
+	glEnable(GL_DEPTH_TEST);
+
 	// ========== Render Loop ==========
 	// Exit loop if GLFW instructed to close window
 	while (!glfwWindowShouldClose(window))
@@ -159,7 +162,7 @@ int main(int argc, char* argv[])
 		// RENDERING
 		// Set clear colour and clear viewport
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use shader program
 		shader.UseShader();
