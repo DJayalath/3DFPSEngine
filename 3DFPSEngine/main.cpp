@@ -1,5 +1,7 @@
 /* 
 NOTE: Runtime Library set to Multi-Threaded rather than Multi-Threaded Debug DLL
+AMENDMENT: Reverted back to M-TD DLL due to vector allocation error
+POSSIBLE TOTAL FIX: Use an empty project not console application?
 
 NOTE: GLAD header must be included before GLFW since both attempt
 to include the OpenGL header and 'glad' will return an error if it detects this
@@ -12,6 +14,9 @@ to include the OpenGL header and 'glad' will return an error if it detects this
 // Standard headers
 #include <iostream> // For printing errors/debugging
 
+// Custom headers
+#include "Shader.h"
+
 // Namespaces
 using namespace std;
 
@@ -23,26 +28,6 @@ void ProcessInput(GLFWwindow *window);
 static constexpr int SCREEN_WIDTH = 1280;
 static constexpr int SCREEN_HEIGHT = 720;
 static constexpr const char* SCREEN_TITLE = "3DFPSEngine";
-
-// Shaders
-static const char *vertex_shader_source = 
-	"#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"layout (location = 1) in vec3 aColor;\n"
-	"out vec3 ourColor;\n"
-	"void main()\n"
-	"{\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"   ourColor = aColor;\n"
-	"}\0";
-const char *fragment_shader_source = 
-	"#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"in vec3 ourColor;\n"
-	"void main()\n"
-	"{\n"
-	"   FragColor = vec4(ourColor, 1.0f);\n"
-	"}\n\0";
 
 int main(int argc, char* argv[])
 {
@@ -83,50 +68,8 @@ int main(int argc, char* argv[])
 	// GLFW should call the resize function when window resized
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 
-	// ========== Shader Compilation ==========
-	// VERTEX SHADER
-	// Create and assign shader object
-	unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	// Provide shader source code and compile
-	glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-	glCompileShader(vertex_shader);
-	// Test if compilation was successful
-	int success;
-	char info_log[512];
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-		cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << endl;
-	}
-	// FRAGMENT SHADER
-	unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-	glCompileShader(fragment_shader);
-	// Test for compilation errors
-	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-		cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << endl;
-	}
-
-	// ========== Linking Shaders ==========
-	// Create a shader program
-	unsigned int shader_program = glCreateProgram();
-	// Attach and link vertex and fragment shaders
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, fragment_shader);
-	glLinkProgram(shader_program);
-	// Check for linking errors
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-		cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << endl;
-	}
-	// Shaders are no longer needed so can be deleted
-	glDeleteShader(vertex_shader);
-	glDeleteShader(fragment_shader);
+	// ========== Setup Shader ==========
+	Shader shader("./shaders/shader.vs", "./shaders/shader.fs");
 
 	// ========== Test Object ==========
 	float vertices[] = 
@@ -174,7 +117,7 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Use shader program
-		glUseProgram(shader_program);
+		shader.UseShader();
 		// Draw the test object
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
