@@ -63,3 +63,4 @@
 #*.RTF   diff=astextplain
 
 3DFPSEngine/include/* linguist-vendored
+glad.c linguist-vendored=false
