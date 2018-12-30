@@ -34,6 +34,10 @@ public:
 	{
 		return m_zoom;
 	}
+	glm::vec3 GetPosition()
+	{
+		return m_position;
+	}
 
 private:
 

@@ -151,8 +151,11 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="VertexArrayObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\lampshader.frag" />
+    <None Include="shaders\lampshader.vert" />
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.vert" />
   </ItemGroup>
