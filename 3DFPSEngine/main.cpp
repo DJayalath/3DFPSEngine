@@ -10,8 +10,6 @@ to include the OpenGL header and 'glad' will return an error if it detects this
 // Library headers
 #include <glad/glad.h> // OpenGL loading library
 #include <GLFW/glfw3.h> // Utility library for OpenGL (Graphics library framework)
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -22,6 +20,7 @@ to include the OpenGL header and 'glad' will return an error if it detects this
 // Custom headers
 #include "Shader.h"
 #include "Camera.h"
+#include "Texture.h"
 
 // Namespaces
 using namespace std;
@@ -181,33 +180,7 @@ int main(int argc, char* argv[])
 
 	// load and create a texture 
 	// -------------------------
-	unsigned int texture;
-	// texture 1
-	// ---------
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// load image, create texture and generate mipmaps
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-	unsigned char *data = stbi_load("./res/container.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
-	stbi_image_free(data);
-
-	shader.UseShader();
+	Texture texture("./res/container.jpg");
 
 	// Enable Z-Buffer and depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -230,8 +203,7 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Bind textures
-		glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-		glBindTexture(GL_TEXTURE_2D, texture);
+		texture.Bind();
 
 		// Use shader program
 		shader.UseShader();
