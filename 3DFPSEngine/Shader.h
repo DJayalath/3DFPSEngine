@@ -13,6 +13,7 @@ public:
 	// Constructor for reading and building shaders
 	Shader(const GLchar* vertex_path, const GLchar* fragment_path);
 
+	// Call glUseProgram
 	void UseShader();
 
 	// Set uniforms in vertex shader
@@ -25,7 +26,6 @@ public:
 	void SetMat2(const std::string &name, const glm::mat2 &value) const;
 	void SetMat3(const std::string &name, const glm::mat3 &value) const;
 	void SetMat4(const std::string &name, const glm::mat4 &value) const;
-
 
 	// Program ID
 	unsigned int ID;
