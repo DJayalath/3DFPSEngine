@@ -205,8 +205,15 @@ int main(int argc, char* argv[])
 		shader.UseShader();
 		shader.SetVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 		shader.SetVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-		shader.SetVec3("lightPos", lightPos);
 		shader.SetVec3("viewPos", camera.GetPosition());
+		shader.SetVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+		shader.SetFloat("material.shininess", 32.0f);
+		shader.SetVec3("light.position", lightPos);
+		shader.SetVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+		shader.SetVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f)); // darken the light a bit to fit the scene
+		shader.SetVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.GetZoom()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
