@@ -64,5 +64,11 @@
     <None Include="shaders\lampshader.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="skyboxshader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skyboxshader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
