@@ -50,7 +50,11 @@ artifacts/
 *_i.h
 *.ilk
 *.meta
+
 *.obj
+# DO NOT IGNORE RESOURCES USING OBJ
+!nanosuit.obj
+
 *.pch
 *.pdb
 *.pgc
