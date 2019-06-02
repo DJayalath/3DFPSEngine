@@ -33,12 +33,12 @@ public:
 	glm::vec3 Right;
 	glm::vec3 WorldUp;
 	// Euler Angles
-	float Yaw;
-	float Pitch;
+	double Yaw;
+	double Pitch;
 	// Camera options
 	float MovementSpeed;
 	float MouseSensitivity;
-	float Zoom;
+	double Zoom;
 
 	// Constructor with vectors
 	Camera(int& screen_width, int& screen_height, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM), m_screen_width(screen_width), m_screen_height(screen_height)
@@ -67,13 +67,13 @@ public:
 
 	glm::mat4 GetProjectionMatrix()
 	{
-		return glm::perspective(glm::radians(this->Zoom), (float)m_screen_width / (float)m_screen_height, 0.1f, 100.0f);
+		return glm::perspective(glm::radians((float)this->Zoom), (float)m_screen_width / (float)m_screen_height, 0.1f, 100.0f);
 	}
 
 	// Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-	void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+	void ProcessKeyboard(Camera_Movement direction, double deltaTime)
 	{
-		float velocity = MovementSpeed * deltaTime;
+		float velocity = MovementSpeed * (float)deltaTime;
 		if (direction == FORWARD)
 			Position += Front * velocity;
 		if (direction == BACKWARD)
@@ -85,7 +85,7 @@ public:
 	}
 
 	// Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
+	void ProcessMouseMovement(double xoffset, double yoffset, GLboolean constrainPitch = true)
 	{
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
@@ -107,7 +107,7 @@ public:
 	}
 
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-	void ProcessMouseScroll(float yoffset)
+	void ProcessMouseScroll(double yoffset)
 	{
 		if (Zoom >= 1.0f && Zoom <= 45.0f)
 			Zoom -= yoffset;
@@ -123,9 +123,9 @@ private:
 	{
 		// Calculate the new Front vector
 		glm::vec3 front;
-		front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-		front.y = sin(glm::radians(Pitch));
-		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+		front.x = (float)(cos(glm::radians(Yaw))* cos(glm::radians(Pitch)));
+		front.y = (float)(sin(glm::radians(Pitch)));
+		front.z = (float)(sin(glm::radians(Yaw)) * cos(glm::radians(Pitch)));
 		Front = glm::normalize(front);
 		// Also re-calculate the Right and Up vector
 		Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

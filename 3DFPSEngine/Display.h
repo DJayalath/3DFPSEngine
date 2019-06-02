@@ -15,13 +15,13 @@ public:
 
 	bool GetInputPressed(int key) { return m_inputs[key] & INPUT_PRESSED; }
 	bool GetInputHeld(int key) { return m_inputs[key] & INPUT_HELD; }
-	float GetScroll() { return m_mouse_scroll_dy; }
-	float GetMouseDX() 
+	double GetScroll() { return m_mouse_scroll_dy; }
+	double GetMouseDX() 
 	{
 		m_mouse_moved = false;
 		return m_mouse_dx; 
 	}
-	float GetMouseDY() { return m_mouse_dy; }
+	double GetMouseDY() { return m_mouse_dy; }
 	bool GetMouseMoved() { return m_mouse_moved; }
 
 	GLFWwindow* GetWindow() { return m_window; }
@@ -48,9 +48,9 @@ private:
 	int m_width, m_height;
 	bool m_mouse_first = true;
 	bool m_mouse_moved = false;
-	float m_mouse_lastx, m_mouse_lasty;
-	float m_mouse_dx, m_mouse_dy;
-	float m_mouse_scroll_dy;
+	double m_mouse_lastx, m_mouse_lasty;
+	double m_mouse_dx, m_mouse_dy;
+	double m_mouse_scroll_dy;
 	unsigned char m_inputs[350];
 };
 

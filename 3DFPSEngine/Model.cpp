@@ -1,5 +1,4 @@
 #include "Model.h"
-
 #include <stb_image.h>
 
 unsigned int Model::TextureFromFile(const char *path, const string &directory, bool gamma)
@@ -11,10 +10,10 @@ unsigned int Model::TextureFromFile(const char *path, const string &directory, b
 	glGenTextures(1, &textureID);
 
 	int width, height, nrComponents;
+	GLenum format = NULL;
 	unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
 	if (data)
 	{
-		GLenum format;
 		if (nrComponents == 1)
 			format = GL_RED;
 		else if (nrComponents == 3)
