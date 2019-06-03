@@ -98,16 +98,17 @@ int main()
 
 	vector<std::string> faces_cube
 	{
-		"./res/skybox/right.jpg",
-		"./res/skybox/left.jpg",
-		"./res/skybox/top.jpg",
-		"./res/skybox/bottom.jpg",
-		"./res/skybox/front.jpg",
-		"./res/skybox/back.jpg"
+		"./res/skybox/right.tga",
+		"./res/skybox/left.tga",
+		"./res/skybox/top.tga",
+		"./res/skybox/bottom.tga",
+		"./res/skybox/front.tga",
+		"./res/skybox/back.tga"
 	};
 	unsigned int cubemapTexture = loadCubemap(faces_cube);
 
 	Entity nanosuit("./res/nanosuit/nanosuit.obj", lightingShader, camera);
+	Entity box("./res/box/Wooden Crate.obj", lightingShader, camera);
 	//Model ourModel("./res/nanosuit/nanosuit.obj");
 
 	// positions of the point lights
@@ -129,6 +130,8 @@ int main()
 
 	nanosuit.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 	nanosuit.SetPosition(glm::vec3(0.0f, -1.75f, 0.0f));
+	box.SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
+	box.SetPosition(glm::vec3(0.0f, -1.75f, -1.75f));
 	// render loop
 	// -----------
 	while (!display.ShouldClose())
@@ -222,6 +225,7 @@ int main()
 
 		//// render the loaded model
 		nanosuit.Render();
+		box.Render();
 
 		// also draw the lamp object(s)
 		lampShader.use();
