@@ -1,0 +1,11 @@
+- Entities extremely inefficient for multiple identical models - fix this!
+- Block placing system:
+	- How is each island stored? Each island = 1 file?
+	- How are blocks handled? Size relative to player? Scaling? How are they placed together?
+	- Starting configuration when player spawns?
+IMPORTANT: What's the point? What is the game?
+	- Outer space bases?
+	- How are resources aquired? XP system? Attacking other bases?
+	- Like Minecraft factions?
+	- Base defense systems? (Remember voltz? ICBMs, ballistics but space themed?)
+	- 

@@ -166,6 +166,9 @@
     <None Include="skyboxshader.frag" />
     <None Include="skyboxshader.vert" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Planning.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
