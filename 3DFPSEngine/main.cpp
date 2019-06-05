@@ -28,26 +28,41 @@ double lastFrame = 0;
 
 int main()
 {
+	// ----- WINDOW -----
+
 	Display display(SCR_WIDTH, SCR_HEIGHT, "3DFPSEngine");
-	Camera camera(display.GetWidth(), display.GetHeight(), glm::vec3(0.0f, 0.0f, 3.0f));
+
+	// ----- SCENE GRAPH -----
 
 	GameObject root;
 
-	// configure global opengl state
-	// -----------------------------
+	// ----- CAMERA -----
+
+	Camera camera(display.GetWidth(), display.GetHeight(), glm::vec3(0.0f, 0.0f, 3.0f));
+
+	// ----- OPENGL STATES -----
+
 	glEnable(GL_DEPTH_TEST);
 
-	// build and compile our shader zprogram
-	// ------------------------------------
+	// ----- SHADER COMPILATION -----
+
 	Shader lightingShader("./shaders/shader.vert", "./shaders/shader.frag");
 	Shader lampShader("./shaders/lampshader.vert", "./shaders/lampshader.frag");
 	Shader skyboxShader("./shaders/skyboxshader.vert", "./shaders/skyboxshader.frag");
 
-	MeshRenderer nanosuit("./res/nanosuit/nanosuit.obj", lightingShader);
-	root.AddComponent(nanosuit);
+	// ----- SHADER CONFIG -----
+
+	lightingShader.use();
+	lightingShader.setInt("material.diffuse", 0);
+	lightingShader.setInt("material.specular", 1);
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
+
+	// ----- SKYBOX -----
 
 	float skyboxVertices[] = {
-		// positions          
+
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -91,7 +106,6 @@ int main()
 		 1.0f, -1.0f,  1.0f
 	};
 
-	// skybox VAO
 	unsigned int skyboxVAO, skyboxVBO;
 	glGenVertexArrays(1, &skyboxVAO);
 	glGenBuffers(1, &skyboxVBO);
@@ -100,8 +114,6 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	// load textures
 
 	vector<std::string> faces_cube
 	{
@@ -114,11 +126,25 @@ int main()
 	};
 	unsigned int cubemapTexture = loadCubemap(faces_cube);
 
-	//Entity nanosuit("./res/nanosuit/nanosuit.obj", lightingShader, camera);
-	Entity box("./res/box/Wooden Crate.obj", lightingShader, camera);
-	//Model ourModel("./res/nanosuit/nanosuit.obj");
+	// ----- CUSTOM MODELS -----
 
-	// positions of the point lights
+	// Nanosuit
+	MeshRenderer nanosuit("./res/nanosuit/nanosuit.obj", lightingShader);
+	GameObject nanosuitObject;
+	root.AddChild(nanosuitObject);
+	nanosuitObject.AddComponent(nanosuit);
+	nanosuitObject.GetTransform().SetPos(glm::vec3(0.f, 0.f, -1.75f));
+	nanosuitObject.GetTransform().SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+
+	// Wooden Crate
+	MeshRenderer box("./res/box/Wooden Crate.obj", lightingShader);
+	GameObject boxObject;
+	root.AddChild(boxObject);
+	boxObject.AddComponent(box);
+	boxObject.GetTransform().SetPos(glm::vec3(0.0f, -1.75f, -1.75f));
+	boxObject.GetTransform().SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
+
+	// Point Lights
 	glm::vec3 pointLightPositions[] = {
 		glm::vec3(0.7f,  0.2f,  2.0f),
 		glm::vec3(2.3f, -3.3f, -4.0f),
@@ -126,42 +152,26 @@ int main()
 		glm::vec3(0.0f,  0.0f, -3.0f)
 	};
 
-	// shader configuration
-	// --------------------
-	lightingShader.use();
-	lightingShader.setInt("material.diffuse", 0);
-	lightingShader.setInt("material.specular", 1);
-
-	skyboxShader.use();
-	skyboxShader.setInt("skybox", 0);
-
-	//nanosuit.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	//nanosuit.SetPosition(glm::vec3(0.0f, -1.75f, 0.0f));
-	box.SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
-	box.SetPosition(glm::vec3(0.0f, -1.75f, -1.75f));
-	// render loop
-	// -----------
+	// ----- RENDER LOOP -----
+	
 	while (!display.ShouldClose())
 	{
-		// per-frame time logic
-		// --------------------
+		// Timing
 		double currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		// input
-		// -----
+		// Input
 		processInput(&display, camera);
-		camera.CopyVectors();
+		root.Input();
 
-		// render
-		// ------
+		// Clear previous buffer
 		display.Clear();
 
-		// Draw skybox
-		glDepthMask(GL_FALSE);
+		// ----- DRAW SKYBOX -----
+
 		skyboxShader.use();
-		// ... set view and projection matrix
+		glDepthMask(GL_FALSE);
 		glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
 		skyboxShader.setMat4("view", view);
 		skyboxShader.setMat4("projection", camera.GetProjectionMatrix());
@@ -169,9 +179,9 @@ int main()
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glDepthMask(GL_TRUE);
-		// ... draw rest of the scene
 
-		// be sure to activate shader when setting uniforms/drawing objects
+		// ----- DRAW LIGHTS -----
+
 		lightingShader.use();
 		lightingShader.setFloat("material.shininess", 32.0f);
 		lightingShader.setVec3("viewPos", camera.Position);
@@ -182,6 +192,16 @@ int main()
 		by defining light types as classes and set their values in there, or by using a more efficient uniform approach
 		by using 'Uniform buffer objects', but that is something we'll discuss in the 'Advanced GLSL' tutorial.
 		*/
+
+		/*
+		Regarding dynamic number of lights in fragment shader (using defined static upper bound)...
+		You usually define an upper bound(let's call this n) and update the array accordingly, taking the n closest lights
+		at any time and using those n lights to fill the light array. If a light gets too far, it isn't considered anymore for lighting
+		in this arrayand replaced with a more closer light. A more flexible approach would be to use deferred rendering with
+		rendering a light volume for each (close enough) light in your scene.With that approach the fragment shader doesn't need
+		to know about the numer of lights, you simply issue a draw call for each light you want to contribute.
+		*/
+
 		// directional light
 		lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
 		lightingShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
@@ -231,35 +251,21 @@ int main()
 		lightingShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 		lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-		//// render the loaded model
-		root.Input();
+		// ----- DRAW LAMPS -----
+
+		// May be used later when placing lamp objects
+
+		// ----- RENDER SCENE GRAPH -----
+
+		camera.CopyVectors(); // Copy projection and view matrix to transform object
 		root.Update();
 		root.Render();
-		root.GetTransform().SetPos(glm::vec3(0.f, 0.f, -1.75f));
-		root.GetTransform().SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-		//nanosuit.Render(root.GetTransform());
-		box.Render();
 
-		// also draw the lamp object(s)
-		lampShader.use();
-		lampShader.setMat4("projection", camera.GetProjectionMatrix());
-		lampShader.setMat4("view", camera.GetViewMatrix());
-
-		for (int i = 0; i < 4; i++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, pointLightPositions[i]);
-			model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
-			lampShader.setMat4("model", model);
-		}
-
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		// -------------------------------------------------------------------------------
+		// Swap buffers
 		display.Update();
 	}
 
-	// glfw: terminate, clearing all previously allocated GLFW resources.
-	// ------------------------------------------------------------------
+	// ----- RESOURCE DEALLOCATION -----
 
 	return 0;
 }
