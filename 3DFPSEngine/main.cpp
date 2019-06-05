@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Entity.h"
+#include "GameObject.h"
+#include "MeshRenderer.h"
 
 #include <iostream>
 
@@ -29,6 +31,8 @@ int main()
 	Display display(SCR_WIDTH, SCR_HEIGHT, "3DFPSEngine");
 	Camera camera(display.GetWidth(), display.GetHeight(), glm::vec3(0.0f, 0.0f, 3.0f));
 
+	GameObject root;
+
 	// configure global opengl state
 	// -----------------------------
 	glEnable(GL_DEPTH_TEST);
@@ -38,6 +42,9 @@ int main()
 	Shader lightingShader("./shaders/shader.vert", "./shaders/shader.frag");
 	Shader lampShader("./shaders/lampshader.vert", "./shaders/lampshader.frag");
 	Shader skyboxShader("./shaders/skyboxshader.vert", "./shaders/skyboxshader.frag");
+
+	MeshRenderer nanosuit("./res/nanosuit/nanosuit.obj", lightingShader);
+	root.AddComponent(nanosuit);
 
 	float skyboxVertices[] = {
 		// positions          
@@ -107,7 +114,7 @@ int main()
 	};
 	unsigned int cubemapTexture = loadCubemap(faces_cube);
 
-	Entity nanosuit("./res/nanosuit/nanosuit.obj", lightingShader, camera);
+	//Entity nanosuit("./res/nanosuit/nanosuit.obj", lightingShader, camera);
 	Entity box("./res/box/Wooden Crate.obj", lightingShader, camera);
 	//Model ourModel("./res/nanosuit/nanosuit.obj");
 
@@ -128,8 +135,8 @@ int main()
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
-	nanosuit.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	nanosuit.SetPosition(glm::vec3(0.0f, -1.75f, 0.0f));
+	//nanosuit.SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+	//nanosuit.SetPosition(glm::vec3(0.0f, -1.75f, 0.0f));
 	box.SetScale(glm::vec3(0.25f, 0.25f, 0.25f));
 	box.SetPosition(glm::vec3(0.0f, -1.75f, -1.75f));
 	// render loop
@@ -145,6 +152,7 @@ int main()
 		// input
 		// -----
 		processInput(&display, camera);
+		camera.CopyVectors();
 
 		// render
 		// ------
@@ -224,7 +232,12 @@ int main()
 		lightingShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
 		//// render the loaded model
-		nanosuit.Render();
+		root.Input();
+		root.Update();
+		root.Render();
+		root.GetTransform().SetPos(glm::vec3(0.f, 0.f, -1.75f));
+		root.GetTransform().SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+		//nanosuit.Render(root.GetTransform());
 		box.Render();
 
 		// also draw the lamp object(s)

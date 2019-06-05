@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Transform.h"
 
 #include <vector>
 
@@ -115,6 +116,12 @@ public:
 			Zoom = 1.0f;
 		if (Zoom >= 45.0f)
 			Zoom = 45.0f;
+	}
+
+	void CopyVectors()
+	{
+		Transform::SetProjectionMatrix(this->GetProjectionMatrix());
+		Transform::SetViewMatrix(this->GetViewMatrix());
 	}
 
 private:
