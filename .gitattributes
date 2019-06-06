@@ -62,5 +62,5 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-3DFPSEngine/include/* linguist-vendored
+3DFPSEngine/include/* linguist-vendored=false
 glad.c linguist-vendored=false
