@@ -35,6 +35,9 @@ bld/
 *.VisualState.xml
 TestResult.xml
 
+# Include Folders
+3DFPSEngine/include/
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/
