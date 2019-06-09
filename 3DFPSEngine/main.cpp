@@ -43,6 +43,7 @@ int main()
 	// ----- OPENGL STATES -----
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE); // MSAA
 
 	// ----- SHADER COMPILATION -----
 
